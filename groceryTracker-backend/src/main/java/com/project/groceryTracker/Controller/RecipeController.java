@@ -1,5 +1,6 @@
 package com.project.groceryTracker.Controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.project.groceryTracker.DTO.RecipeInventoryDTO;
 import com.project.groceryTracker.Service.AIRecipeService;
 import com.project.groceryTracker.Service.RecipeService;
@@ -34,7 +35,7 @@ public class RecipeController {
     }
 
     @GetMapping("/recommendations")
-    public ResponseEntity<String> getRecipeRecommendations(
+    public ResponseEntity<JsonNode> getRecipeRecommendations(
             @AuthenticationPrincipal UserDetails userDetails) {
 
         return ResponseEntity.ok(

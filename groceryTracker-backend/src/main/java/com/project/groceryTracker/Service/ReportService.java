@@ -69,8 +69,7 @@ public class ReportService {
         double freshInventoryValue = 0;
 
         for (ReportInventoryDTO item : items) {
-            double itemValue =
-                    (double) item.getPrice() * item.getQuantity();
+            double itemValue = getItemValue(item);
 
             totalSpending += itemValue;
 
@@ -107,8 +106,7 @@ public class ReportService {
                         java.util.stream.Collectors.groupingBy(
                                 ReportInventoryDTO::getCategory,
                                 java.util.stream.Collectors.summingDouble(
-                                        item -> (double) item.getPrice()
-                                                * item.getQuantity()
+                                        this::getItemValue
                                 )
                         )
                 )
@@ -137,7 +135,7 @@ public class ReportService {
                         item.getItemName(),
                         item.getCategory(),
                         item.getQuantity(),
-                        (double) item.getPrice() * item.getQuantity()
+                        getItemValue(item)
                 ))
                 .sorted(
                         java.util.Comparator.comparingDouble(
@@ -169,8 +167,7 @@ public class ReportService {
                     double waste = 0;
 
                     for (ReportInventoryDTO item : entry.getValue()) {
-                        double itemValue =
-                                (double) item.getPrice() * item.getQuantity();
+                        double itemValue = getItemValue(item);
 
                         spending += itemValue;
 
@@ -205,8 +202,7 @@ public class ReportService {
 
         for (ReportInventoryDTO item : items) {
 
-            double itemValue =
-                    (double) item.getPrice() * item.getQuantity();
+            double itemValue = getItemValue(item);
 
             if ("FRESH".equals(item.getStatus())) {
                 freshValue += itemValue;
@@ -222,5 +218,11 @@ public class ReportService {
                 new InventoryStatusDTO("Expiring Soon", expiringValue),
                 new InventoryStatusDTO("Expired", expiredValue)
         );
+    }
+
+    private double getItemValue(ReportInventoryDTO item) {
+        int price = item.getPrice() == null ? 0 : item.getPrice();
+        int quantity = item.getQuantity() == null ? 0 : item.getQuantity();
+        return (double) price * quantity;
     }
 }

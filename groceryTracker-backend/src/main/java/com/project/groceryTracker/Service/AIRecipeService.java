@@ -3,16 +3,19 @@ package com.project.groceryTracker.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.groceryTracker.DTO.RecipeInventoryDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -28,39 +31,26 @@ public class AIRecipeService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public String getRecipeRecommendations(String email) {
-
-
+    public JsonNode getRecipeRecommendations(String email) {
         List<RecipeInventoryDTO> inventory =
                 recipeService.getRecipeInventory(email);
 
-
-        StringBuilder inventoryText = new StringBuilder();
-
-        for (RecipeInventoryDTO item : inventory) {
-
-            inventoryText.append("""
-                    {
-                      "itemName": "%s",
-                      "quantity": %s,
-                      "unit": "%s",
-                      "category": "%s",
-                      "status": "%s",
-                      "expiryDate": "%s"
-                    },
-                    """.formatted(
-                    item.getItemName(),
-                    item.getQuantity(),
-                    item.getUnit(),
-                    item.getCategory(),
-                    item.getStatus(),
-                    item.getExpiryDate()
-            ));
+        String inventoryText;
+        try {
+            inventoryText = objectMapper.writeValueAsString(inventory);
+        } catch (JsonProcessingException exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Unable to prepare inventory for recipe recommendations",
+                    exception
+            );
         }
 
-        // Remove the final comma
-        if (inventoryText.length() > 0) {
-            inventoryText.deleteCharAt(inventoryText.length() - 1);
+        if (apiKey == null || apiKey.isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    "Recipe recommendations are not configured"
+            );
         }
 
         // ---------------------------------------------------------
@@ -270,15 +260,16 @@ public class AIRecipeService {
             JsonNode root =
                     objectMapper.readTree(response.getBody());
 
-            JsonNode content =
-                    root.path("choices")
-                            .get(0)
-                            .path("message")
-                            .path("content");
+            JsonNode content = root.path("choices")
+                    .path(0)
+                    .path("message")
+                    .path("content");
 
-            if (content.isMissingNode()) {
-                System.out.println("AI response did not contain content.");
-                return "{\"canMakeNow\":[],\"needsAdditionalIngredients\":[]}";
+            if (!content.isTextual()) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_GATEWAY,
+                        "Recipe provider returned an invalid response"
+                );
             }
 
             String aiJson = content.asText();
@@ -310,56 +301,59 @@ public class AIRecipeService {
             // 10. Validate JSON
             // -----------------------------------------------------
 
-            objectMapper.readTree(aiJson);
-
-            System.out.println("AI Recipe JSON:");
-            System.out.println(aiJson);
-
-            return aiJson;
-
-        } catch (HttpServerErrorException.ServiceUnavailable e) {
-
-            System.out.println(
-                    "OpenRouter service is temporarily unavailable."
+            try {
+                JsonNode recipeData = objectMapper.readTree(aiJson);
+                if (!recipeData.isObject()
+                        || !isValidRecipeList(recipeData.path("canMakeNow"))
+                        || !isValidRecipeList(
+                                recipeData.path("needsAdditionalIngredients"))) {
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_GATEWAY,
+                            "Recipe provider returned incomplete recipe data"
+                    );
+                }
+                return recipeData;
+            } catch (JsonProcessingException exception) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_GATEWAY,
+                        "Recipe provider returned invalid recipe data",
+                        exception
+                );
+            }
+        } catch (HttpStatusCodeException exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_GATEWAY,
+                    "Recipe provider request failed",
+                    exception
             );
-
-            return """
-                    {
-                      "canMakeNow": [],
-                      "needsAdditionalIngredients": [],
-                      "error": "AI service is temporarily unavailable."
-                    }
-                    """;
-
-        } catch (HttpClientErrorException e) {
-
-            System.out.println(
-                    "Status: " + e.getStatusCode()
+        } catch (RestClientException exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                    "Recipe provider is temporarily unavailable",
+                    exception
             );
-
-            System.out.println(
-                    "Response: " + e.getResponseBodyAsString()
+        } catch (JsonProcessingException exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_GATEWAY,
+                    "Recipe provider returned an invalid response",
+                    exception
             );
-
-            return """
-                    {
-                      "canMakeNow": [],
-                      "needsAdditionalIngredients": [],
-                      "error": "AI API request failed."
-                    }
-                    """;
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-            return """
-                    {
-                      "canMakeNow": [],
-                      "needsAdditionalIngredients": [],
-                      "error": "Unexpected error occurred."
-                    }
-                    """;
         }
+    }
+
+    private boolean isValidRecipeList(JsonNode recipes) {
+        if (!recipes.isArray()) {
+            return false;
+        }
+
+        for (JsonNode recipe : recipes) {
+            if (recipe.path("name").asText().isBlank()
+                    || !recipe.path("ingredients").isArray()
+                    || !recipe.path("preparationSteps").isArray()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -2,7 +2,7 @@ import styles from '../styling/Navbar.module.css';
 import leafLogo from '../assets/logo-leaf.png';
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../utils/apiClient';
 
 import {
     LuUser,
@@ -22,12 +22,17 @@ export default function Navbar() {
 
     const [notifications, setNotifications] = useState([]);
     useEffect(() => {
+        let isActive = true;
+        let refreshInterval;
         const fetchNotifications = async () => {
+            if (!pathname.startsWith("/dashboard")) {
+                return;
+            }
+
             try {
                 const token = localStorage.getItem("token");
 
                 if (!token) {
-                    setNotifications([]);
                     return;
                 }
 
@@ -40,17 +45,25 @@ export default function Navbar() {
                     }
                 );
 
-                setNotifications(response.data);
+                if (isActive) {
+                    setNotifications(response.data);
+                }
             } catch (error) {
                 console.error("Error fetching notifications:", error);
             }
         };
 
         if (pathname.startsWith("/dashboard")) {
-            fetchNotifications();
-        } else {
-            setNotifications([]);
+            void fetchNotifications();
+            refreshInterval = window.setInterval(fetchNotifications, 60_000);
         }
+
+        window.addEventListener("authentication-changed", fetchNotifications);
+        return () => {
+            isActive = false;
+            window.clearInterval(refreshInterval);
+            window.removeEventListener("authentication-changed", fetchNotifications);
+        };
     }, [pathname]);
     if (
         pathname === '/login' ||

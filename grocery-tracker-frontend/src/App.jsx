@@ -2,7 +2,7 @@ import './App.css'
 import LandingPage from './pages/LandingPage'
 import Login from './pages/Login'
 import Signup from './pages/Singup'
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
 import Dashboard from './pages/Dashboard'
 import AddItem from './pages/AddItem'
 import Navbar from './components/Navbar'
@@ -15,6 +15,12 @@ import Settings from './pages/Settings'
 import Profile from './pages/Profile'
 import RemedySuggestions from './pages/RemedySuggestions'
 import { InventoryProvider } from './context/InventoryContext';
+
+function RequireAuth({ children }) {
+  return localStorage.getItem("token")
+    ? children
+    : <Navigate to="/login" replace />;
+}
 
 function App() {
 
@@ -29,31 +35,48 @@ function App() {
           <Route path="/Signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
 
-          <Route path="/dashboard" element={<DashBoardLayout />}>
+          <Route
+            path="/dashboard"
+            element={
+              <RequireAuth>
+                <DashBoardLayout />
+              </RequireAuth>
+            }
+          >
             <Route index element={<Dashboard />} />
             <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<Settings />} />
             <Route path="remedies" element={<RemedySuggestions />} />
           </Route>
 
-          <Route path="/dashboard/profile" element={<Profile />} />
+          <Route
+            path="/dashboard/profile"
+            element={
+              <RequireAuth>
+                <Profile />
+              </RequireAuth>
+            }
+          />
 
           <Route
             path="/dashboard/inventory/fresh"
-            element={<FreshItems />}
+            element={<RequireAuth><FreshItems /></RequireAuth>}
           />
 
           <Route
             path="/dashboard/inventory/expiring"
-            element={<ExpiringItems />}
+            element={<RequireAuth><ExpiringItems /></RequireAuth>}
           />
 
           <Route
             path="/dashboard/inventory/expired"
-            element={<ExpiredItems />}
+            element={<RequireAuth><ExpiredItems /></RequireAuth>}
           />
 
-          <Route path="/dashboard/addItem" element={<AddItem />} />
+          <Route
+            path="/dashboard/addItem"
+            element={<RequireAuth><AddItem /></RequireAuth>}
+          />
 
           <Route path="*" element={<h1>Page Not Found</h1>} />
         </Routes>

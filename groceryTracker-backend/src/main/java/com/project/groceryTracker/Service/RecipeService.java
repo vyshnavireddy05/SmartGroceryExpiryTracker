@@ -28,12 +28,16 @@ public class RecipeService {
     }
 
     public String calculateStatus(LocalDate expiryDate) {
+        return calculateStatus(expiryDate, LocalDate.now());
+    }
+
+    public String calculateStatus(LocalDate expiryDate, LocalDate today) {
         if (expiryDate == null) {
             return "UNKNOWN";
         }
 
         long daysLeft = ChronoUnit.DAYS.between(
-                LocalDate.now(), expiryDate);
+                today, expiryDate);
 
         if (daysLeft <= 0) {
             return "EXPIRED";

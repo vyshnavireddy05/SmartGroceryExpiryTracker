@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../styling/AddItemForm.module.css";
-import axios from "axios";
+import apiClient from "../utils/apiClient";
+import { useInventory } from "../context/InventoryContext";
 export default function AddItemForm() {
     const navigate = useNavigate();
+    const { refreshInventory } = useInventory();
 
     const [formData, setFormData] = useState({
         itemName: "",
@@ -17,14 +19,30 @@ export default function AddItemForm() {
         notes: "",
     });
 
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState("");
+
     const addInventory = async () => {
+        if (saving) return;
+        setSaving(true);
+        setError("");
+
         try {
-            const response = await axios.post('/api/inventory/addItem', formData);
-            console.log("Item added successfully:", response.data);
-            alert("Item added successfully!");
+            await apiClient.post("/api/inventory/addItem", {
+                ...formData,
+                price: formData.price === "" ? null : Number(formData.price),
+                quantity: Number(formData.quantity),
+            });
+            await refreshInventory();
             navigate("/dashboard");
         } catch (error) {
             console.error("Error adding item:", error);
+            setError(
+                error.response?.data?.message ||
+                "Unable to add this item. Please try again."
+            );
+        } finally {
+            setSaving(false);
         }
     }
 
@@ -239,6 +257,7 @@ export default function AddItemForm() {
 
 
                     <div className={styles.actions}>
+                        {error && <p role="alert">{error}</p>}
 
                         <button
                             type="button"
@@ -251,9 +270,9 @@ export default function AddItemForm() {
                         <button
                             type="submit"
                             className={styles.submitButton}
-                            onClick={handleSubmit}
+                            disabled={saving}
                         >
-                            + Add Item
+                            {saving ? "Adding..." : "+ Add Item"}
                         </button>
 
                     </div>

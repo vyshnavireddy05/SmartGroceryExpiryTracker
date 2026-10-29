@@ -1,38 +1,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "../styling/RemedySuggestions.module.css";
-
-
-const FOOD_IMAGES = [
-    "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1000&q=85",
-    "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1000&q=85",
-    "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=1000&q=85",
-    "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=1000&q=85",
-    "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=1000&q=85",
-];
-
-
-const getRecipeImage = (recipe, index) => {
-    const name = recipe?.name?.toLowerCase() || "";
-
-    if (name.includes("salad") || name.includes("vegetable")) {
-        return FOOD_IMAGES[1];
-    }
-
-    if (name.includes("toast") || name.includes("sandwich")) {
-        return FOOD_IMAGES[2];
-    }
-
-    if (name.includes("pasta") || name.includes("noodle")) {
-        return FOOD_IMAGES[3];
-    }
-
-    if (name.includes("rice") || name.includes("bowl")) {
-        return FOOD_IMAGES[4];
-    }
-
-    return FOOD_IMAGES[index % FOOD_IMAGES.length];
-};
+import foodPlaceholder from "../assets/img2.jpg";
 
 const RemedySuggestions = () => {
     const [recipes, setRecipes] = useState({
@@ -72,12 +41,17 @@ const fetchRecipes = async () => {
         }
 
         if (!response.ok) {
-            throw new Error("Failed to fetch recipe recommendations.");
+            const responseData = await response.json().catch(() => ({}));
+            throw new Error(
+                responseData.message || "Failed to fetch recipe recommendations."
+            );
         }
 
         const data = await response.json();
 
-        console.log("Recipe recommendations:", data);
+        if (data.error) {
+            throw new Error(data.error);
+        }
 
         setRecipes({
             canMakeNow: Array.isArray(data.canMakeNow)
@@ -331,9 +305,7 @@ const fetchRecipes = async () => {
 // RECIPE CARD
 // =============================================================
 
-const RecipeCard = ({ recipe, index }) => {
-    const image = getRecipeImage(recipe, index);
-
+const RecipeCard = ({ recipe }) => {
     return (
         <article className={styles.recipeCard}>
 
@@ -343,15 +315,13 @@ const RecipeCard = ({ recipe, index }) => {
 
             <div className={styles.imageContainer}>
                 <img
-                    src={image}
+                    src={foodPlaceholder}
                     alt={recipe.name}
                     className={styles.recipeImage}
                     loading="lazy"
                     onError={(event) => {
-                        event.currentTarget.src =
-                            FOOD_IMAGES[
-                                index % FOOD_IMAGES.length
-                            ];
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = foodPlaceholder;
                     }}
                 />
 

@@ -16,6 +16,9 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
             InventoryItem inventoryItem,
             String type
     );
+
+    Optional<Notification> findByEventKey(String eventKey);
+
     List<Notification> findByUserOrderByCreatedAtDesc(User user);
     
 }

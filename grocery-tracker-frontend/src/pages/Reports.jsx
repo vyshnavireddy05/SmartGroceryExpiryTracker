@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "../styling/reports.module.css";
-import axios from "axios";
+import axios from "../utils/apiClient";
 import {
     PieChart,
     Pie,
@@ -42,15 +42,8 @@ export default function Reports() {
     }, []);
 
     useEffect(() => {
-        fetch("/api/reports/waste-by-category")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch category waste");
-                }
-
-                return response.json();
-            })
-            .then((data) => {
+        axios.get("/api/reports/waste-by-category")
+            .then(({ data }) => {
                 console.log("Category waste:", data);
                 setCategoryWaste(data);
             })
@@ -60,14 +53,8 @@ export default function Reports() {
     }, []);
 
     useEffect(() => {
-        fetch("/api/reports/most-wasted")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch wasted items");
-                }
-                return response.json();
-            })
-            .then((data) => {
+        axios.get("/api/reports/most-wasted")
+            .then(({ data }) => {
                 console.log("Most wasted items:", data);
                 setMostWastedItems(data);
             })
@@ -78,15 +65,8 @@ export default function Reports() {
 
 
     useEffect(() => {
-        fetch("/api/reports/monthly")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch monthly report");
-                }
-
-                return response.json();
-            })
-            .then((data) => {
+        axios.get("/api/reports/monthly")
+            .then(({ data }) => {
                 console.log("Monthly report:", data);
                 setMonthlyData(data);
             })
@@ -97,15 +77,8 @@ export default function Reports() {
 
 
     useEffect(() => {
-        fetch("/api/reports/inventory-status")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch inventory status");
-                }
-
-                return response.json();
-            })
-            .then((data) => {
+        axios.get("/api/reports/inventory-status")
+            .then(({ data }) => {
                 console.log("Inventory status:", data);
                 setInventoryStatus(data);
             })

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "../components/AuthForm";
+import { notifyAuthenticationChanged } from "../utils/auth";
 
 export default function Singup() {
 const navigate = useNavigate();
@@ -27,6 +28,7 @@ function handleChange(e) {
 
 async function handleSignUp(e) {
     e.preventDefault();
+    if (loading) return;
     setError("");
 
     if (formData.password.length < 8) {
@@ -47,7 +49,8 @@ async function handleSignUp(e) {
     setLoading(true);
 
     try {
-        const { confirmPassword, ...registrationData } = formData;
+        const registrationData = { ...formData };
+        delete registrationData.confirmPassword;
 
         const response = await fetch("/api/auth/register", {
             method: "POST",
@@ -91,6 +94,7 @@ async function handleSignUp(e) {
                 email: data.email,
             })
         );
+        notifyAuthenticationChanged();
 
         navigate("/dashboard", { replace: true });
     } catch (err) {

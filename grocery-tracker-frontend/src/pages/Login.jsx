@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "../components/AuthForm";
+import { notifyAuthenticationChanged } from "../utils/auth";
 
 export default function Login() {
 const navigate = useNavigate();
@@ -24,6 +25,7 @@ function handleChange(e) {
 
 async function handleLogin(e) {
     e.preventDefault();
+    if (loading) return;
     setError("");
     setLoading(true);
 
@@ -61,6 +63,7 @@ async function handleLogin(e) {
                 email: data.email,
             })
         );
+        notifyAuthenticationChanged();
 
         navigate("/dashboard", { replace: true });
     } catch (err) {

@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom';
 import styles from '../styling/SummaryCards.module.css';
-import { useNavigate } from 'react-router-dom';
 export default function SummaryCards({freshCount, expiringCount, expiredCount}) {
-    const navigate = useNavigate();
     return(
         <div className={styles.summaryCards}>
 
@@ -42,7 +40,7 @@ export default function SummaryCards({freshCount, expiringCount, expiredCount}) 
                         <h3>Expiring Soon</h3>
                         <p className={styles.count}>{expiringCount}</p>
                         <p className={styles.description}>
-                            Use within 3 days
+                            Use within 7 days
                         </p>
                     </div>
                 </div>

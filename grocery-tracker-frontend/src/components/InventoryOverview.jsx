@@ -1,14 +1,17 @@
 import { useMemo, useState } from "react";
 import styles from "../styling/InventoryOverview.module.css";
-import axios from "axios";
+import axios from "../utils/apiClient";
 import { useInventory } from "../context/InventoryContext";
 export default function InventoryOverview({ filter = "all" }) {
     const [search, setSearch] = useState("");
     const [category, setCategory] = useState("all");
-    const { inventory, setInventory } = useInventory();
+    const [requestError, setRequestError] = useState("");
+    const [updatingItemId, setUpdatingItemId] = useState(null);
+    const { inventory, setInventory, error: inventoryError, loading } = useInventory();
     // Increase quantity
     const increaseQuantity = async (id, currentQuantity) => {
-
+        setRequestError("");
+        setUpdatingItemId(id);
         try {
 
             const newQuantity = currentQuantity + 1;
@@ -45,11 +48,18 @@ export default function InventoryOverview({ filter = "all" }) {
 
         } catch (error) {
             console.error("Error increasing quantity:", error);
+            setRequestError(
+                error.response?.data?.message || "Unable to update quantity."
+            );
+        } finally {
+            setUpdatingItemId(null);
         }
     };
 
     // Decrease quantity
     const decreaseQuantity = async (id, currentQuantity) => {
+        setRequestError("");
+        setUpdatingItemId(id);
         try {
             const newQuantity = Math.max(0, currentQuantity - 1);
 
@@ -81,6 +91,11 @@ export default function InventoryOverview({ filter = "all" }) {
 
         } catch (error) {
             console.error("Error decreasing quantity:", error);
+            setRequestError(
+                error.response?.data?.message || "Unable to update quantity."
+            );
+        } finally {
+            setUpdatingItemId(null);
         }
     };
 
@@ -164,17 +179,15 @@ export default function InventoryOverview({ filter = "all" }) {
                             All Categories
                         </option>
 
-                        <option value="Dairy">
-                            Dairy
-                        </option>
-
-                        <option value="Fruits">
-                            Fruits
-                        </option>
-
-                        <option value="Bakery">
-                            Bakery
-                        </option>
+                        {[...new Set(inventory
+                            .map((item) => item.category)
+                            .filter(Boolean))]
+                            .sort()
+                            .map((itemCategory) => (
+                                <option key={itemCategory} value={itemCategory}>
+                                    {itemCategory}
+                                </option>
+                            ))}
 
                     </select>
 
@@ -182,6 +195,10 @@ export default function InventoryOverview({ filter = "all" }) {
 
             </div>
 
+            {(inventoryError || requestError) && (
+                <p role="alert">{requestError || inventoryError}</p>
+            )}
+            {loading && <p>Loading inventory...</p>}
 
             {/* Table */}
             <div className={styles.tableContainer}>
@@ -278,8 +295,8 @@ export default function InventoryOverview({ filter = "all" }) {
                                                     )
                                                 }
                                                 disabled={
-                                                    item.quantity ===
-                                                    0
+                                                    item.quantity === 0 ||
+                                                    updatingItemId === item.id
                                                 }
                                             >
                                                 −
@@ -302,6 +319,7 @@ export default function InventoryOverview({ filter = "all" }) {
                                                 className={
                                                     styles.quantityButton
                                                 }
+                                                disabled={updatingItemId === item.id}
                                                 onClick={() =>
                                                     increaseQuantity(
                                                         item.id,

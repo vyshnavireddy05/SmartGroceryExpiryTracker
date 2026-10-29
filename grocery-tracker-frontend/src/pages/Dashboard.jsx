@@ -3,8 +3,22 @@ import SummaryCards from "../components/SummaryCards";
 import InventoryOverview from "../components/InventoryOverview";
 import { useInventory } from "../context/InventoryContext";
 export default function Dashboard() {
-  const {inventory} = useInventory();
-  
+  const { inventory, loading, error, refreshInventory } = useInventory();
+
+  if (loading) {
+    return <p>Loading your inventory...</p>;
+  }
+
+  if (error) {
+    return (
+      <div role="alert">
+        <p>{error}</p>
+        <button type="button" onClick={refreshInventory}>
+          Try again
+        </button>
+      </div>
+    );
+  }
   
   const freshCount = inventory.filter((item) => item.status === "FRESH").length;
 

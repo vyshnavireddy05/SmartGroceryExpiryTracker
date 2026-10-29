@@ -63,6 +63,8 @@ export function UserProvider({ children }) {
     );
 }
 
+// Context hooks are intentionally colocated with their provider.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useUser() {
     return useContext(UserContext);
 }

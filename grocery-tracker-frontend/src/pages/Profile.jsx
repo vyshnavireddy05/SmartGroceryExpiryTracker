@@ -1,7 +1,7 @@
 import styles from "../styling/Profile.module.css";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../utils/apiClient";
 
 function Profile() {
 
@@ -37,8 +37,6 @@ function Profile() {
                         },
                     }
                 );
-                console.log("Api Response:", response);
-                console.log("Profile details fetched:", response.data);
                 const data = response.data;
 
                 setProfile({
@@ -65,7 +63,7 @@ function Profile() {
 
         getProfileDetails();
 
-    }, []);
+    }, [navigate]);
 
     const fullName =
         `${profile.firstName} ${profile.lastName}`.trim();

@@ -1,7 +1,7 @@
 
 import styles from '../styling/Settings.module.css';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useCallback, useEffect, useState } from 'react';
+import axios from '../utils/apiClient';
 import { useNavigate } from 'react-router-dom';
 
 export default function Settings() {
@@ -21,7 +21,7 @@ export default function Settings() {
     const [saving, setSaving] = useState(false);
 
     // Read the JWT saved after login.
-    const getAuthHeaders = () => {
+    const getAuthHeaders = useCallback(() => {
         const token = localStorage.getItem('token');
 
         if (!token) {
@@ -32,7 +32,7 @@ export default function Settings() {
         return {
             Authorization: `Bearer ${token}`
         };
-    };
+    }, [navigate]);
 
     // Fetch settings for the authenticated user.
     useEffect(() => {
@@ -82,7 +82,7 @@ export default function Settings() {
         };
 
         getDetails();
-    }, [navigate]);
+    }, [getAuthHeaders, navigate]);
 
     // Handle profile input changes.
     const handleProfileChange = (e) => {

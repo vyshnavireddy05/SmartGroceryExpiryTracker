@@ -1,5 +1,4 @@
 import styles from '../styling/landingpage.module.css';
-import leafLogo from '../assets/logo-leaf.png';
 import { useNavigate } from 'react-router-dom';
 
 import {
