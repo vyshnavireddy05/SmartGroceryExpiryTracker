@@ -1,0 +1,207 @@
+.inventoryOverview {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 24px;
+}
+
+.topSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.topSection h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.topSection p {
+    margin-top: 6px;
+    color: #777;
+    font-size: 14px;
+}
+
+.controls {
+    display: flex;
+    gap: 12px;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.searchBox input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+.controls select {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: white;
+}
+
+.tableContainer {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 14px;
+    font-size: 13px;
+    color: #777;
+    border-bottom: 1px solid #eee;
+}
+
+td {
+    padding: 16px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.itemName {
+    font-weight: 600;
+}
+
+.status {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.fresh {
+    background: #e8f7ee;
+    color: #21864b;
+}
+
+.expiring {
+    background: #fff4d6;
+    color: #b77900;
+}
+
+.expired {
+    background: #ffe8e8;
+    color: #d64545;
+}
+
+.noItems {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+}
+.quantityControl {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.quantityButton {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #cfe0ca;
+    border-radius: 7px;
+
+    background: #f4f9f1;
+
+    color: #176b3a;
+
+    font-size: 18px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: all 0.15s ease;
+}
+.quantityButton:hover:not(:disabled) {
+    background: #e3f0df;
+    border-color: #b9d4b2;
+}
+.quantityButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.quantityValue {
+    min-width: 24px;
+
+    text-align: center;
+
+    color: #333;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+.quantityControl {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+}
+
+.quantityButton {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #cfe0ca;
+    border-radius: 7px;
+
+    background: #f4f9f1;
+
+    color: #176b3a;
+
+    font-size: 18px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: all 0.15s ease;
+}
+
+.quantityButton:hover:not(:disabled) {
+    background: #e3f0df;
+    border-color: #b9d4b2;
+}
+
+.quantityButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.quantityValue {
+    min-width: 24px;
+
+    text-align: center;
+
+    color: #333;
+
+    font-size: 14px;
+    font-weight: 600;
+}

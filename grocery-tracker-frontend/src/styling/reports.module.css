@@ -1,0 +1,185 @@
+
+.reportsPage {
+    padding: 30px;
+    background: #faf9f5;
+    box-sizing: border-box;
+    min-height: 100vh;
+}
+
+
+.pageHeader {
+    margin-bottom: 28px;
+}
+
+.pageHeader h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: #222;
+}
+
+.pageHeader p {
+    margin-top: 7px;
+    color: #777;
+    font-size: 14px;
+}
+
+/* Summary Cards */
+
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.summaryCard {
+    background: white;
+    padding: 22px;
+    border-radius: 14px;
+    border: 1px solid #e8ece9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.cardTitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.cardValue {
+    font-size: 25px;
+    font-weight: 600;
+    color: #16861c;
+}
+
+.cardDescription {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #999;
+}
+
+/* Sections */
+
+.section {
+    margin-top: 30px;
+}
+
+.section h2 {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #222;
+}
+
+/* Inventory Values */
+
+.inventoryValueGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.valueCard {
+    background: white;
+    border: 1px solid #e8ece9;
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.valueCard span {
+    color: #666;
+    font-size: 14px;
+}
+
+.valueCard strong {
+    color: #16861c;
+    font-size: 18px;
+}
+
+
+.analyticsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 30px;
+    width: 100%;
+}
+
+.analyticsCard {
+    background: #ffffff;
+    border: 1px solid #e1e7e3;
+    border-radius: 16px;
+    padding: 20px;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.analyticsCard h2 {
+    margin: 0 0 15px;
+    font-size: 20px;
+}
+
+.wastedItemsSection {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.wastedItemsSection .analyticsCard {
+    width: 100%;
+}
+
+.tableContainer {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tableContainer table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.tableContainer th,
+.tableContainer td {
+    padding: 12px 10px;
+    text-align: left;
+}
+
+.tableContainer th:nth-child(1),
+.tableContainer td:nth-child(1) {
+    width: 30%;
+}
+
+.tableContainer th:nth-child(2),
+.tableContainer td:nth-child(2) {
+    width: 25%;
+}
+
+.tableContainer th:nth-child(3),
+.tableContainer td:nth-child(3) {
+    width: 15%;
+}
+
+.tableContainer th:nth-child(4),
+.tableContainer td:nth-child(4) {
+    width: 30%;
+}
+
+@media (max-width: 1200px) {
+
+    .analyticsGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
+
+@media (max-width: 800px) {
+
+    .analyticsGrid {
+        grid-template-columns: 1fr;
+    }
+
+}

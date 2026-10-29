@@ -1,0 +1,177 @@
+.summaryCards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+
+.card {
+    min-height: 180px;
+    padding: 20px;
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    box-sizing: border-box;
+}
+
+.cardTop {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+}
+
+.iconCircle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 30px;
+    flex-shrink: 0;
+}
+
+.cardInfo h3 {
+    margin: 5px 0 4px;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.count {
+    margin: 0;
+
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.description {
+    margin: 6px 0 0;
+
+    font-size: 14px;
+}
+
+.viewButton {
+    align-self: flex-end;
+
+    border: none;
+    background: transparent;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.viewButton span {
+    font-size: 20px;
+}
+.viewLink {
+    text-decoration: none;
+    color: inherit;
+}
+.freshCard {
+    background: linear-gradient(
+        135deg,
+        #f4faf1,
+        #fbfdf9
+    );
+
+    border: 1px solid #dcebd8;
+}
+
+.freshCard .iconCircle {
+    background: #dcefd5;
+}
+
+.freshCard .cardInfo h3 {
+    color: #0b5633;
+}
+
+.freshCard .count {
+    color: #185c38;
+}
+
+.freshCard .description {
+    color: #555;
+}
+
+.freshCard .viewButton {
+    color: #00833e;
+}
+.expiringCard {
+    background: linear-gradient(
+        135deg,
+        #fffaf0,
+        #fffdf8
+    );
+
+    border: 1px solid #f5e6bf;
+}
+
+.expiringCard .iconCircle {
+    background: #fff0c8;
+}
+
+.expiringCard .cardInfo h3 {
+    color: #996600;
+}
+
+.expiringCard .count {
+    color: #5e4b0a;
+}
+
+.expiringCard .description {
+    color: #555;
+}
+
+.expiringCard .viewButton {
+    color: #e09200;
+}.expiredCard {
+    background: linear-gradient(
+        135deg,
+        #fff5f3,
+        #fffafa
+    );
+
+    border: 1px solid #f5d9d5;
+}
+
+.expiredCard .iconCircle {
+    background: #ffdeda;
+}
+
+.expiredCard .cardInfo h3 {
+    color: #4b2925;
+}
+
+.expiredCard .count {
+    color: #3e2c29;
+}
+
+.expiredCard .description {
+    color: #555;
+}
+
+.expiredCard .viewButton {
+    color: #e31b23;
+}
+@media (max-width: 1000px) {
+    .summaryCards {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        min-height: 160px;
+    }
+}

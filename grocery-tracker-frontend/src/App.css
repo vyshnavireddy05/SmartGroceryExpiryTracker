@@ -1,0 +1,70 @@
+/* =========================================================
+   GLOBAL RESET
+========================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
+
+:root {
+    --green-primary: #15803d;
+    --green-dark: #14532d;
+    --green-light: #eaf3dc;
+
+    --cream: #faf9f2;
+    --white: #ffffff;
+
+    --yellow: #edc126;
+    --yellow-hover: #dfb415;
+
+    --shadow-soft: 0 8px 25px rgba(0, 0, 0, 0.08);
+
+    --font-heading: "Poppins", sans-serif;
+    --font-body: "Inter", sans-serif;
+}
+
+
+/* =========================================================
+   HTML / BODY
+========================================================= */
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+
+    min-height: 100%;
+    min-width: 100%;
+
+    font-family: var(--font-body);
+    background: var(--cream);
+}
+
+
+/* =========================================================
+   GLOBAL TYPOGRAPHY
+========================================================= */
+
+h1,
+h2,
+h3,
+h4 {
+    margin: 0;
+
+    color: var(--green-dark);
+    font-family: var(--font-heading);
+}
+
+p {
+    color: var(--green-primary);
+    font-family: var(--font-body);
+}

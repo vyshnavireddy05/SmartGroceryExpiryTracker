@@ -1,0 +1,533 @@
+.page {
+  min-height: 100vh;
+  padding: 34px 38px 60px;
+  background: #f8faf9;
+} /* ========================================================= PAGE HEADER ========================================================= */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 30px;
+  margin-bottom: 42px;
+}
+.pageHeader > div {
+  max-width: 720px;
+}
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 9px;
+  color: #08a44b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+.pageHeader h1 {
+  margin: 0;
+  color: #173b25;
+  font-size: 34px;
+  line-height: 1.15;
+  font-weight: 750;
+  letter-spacing: -0.8px;
+}
+.pageHeader p {
+  margin: 10px 0 0;
+  color: #68776f;
+  font-size: 15px;
+  line-height: 1.6;
+} /* ========================================================= REFRESH BUTTON ========================================================= */
+.refreshButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: #08a44b;
+  color: white;
+  padding: 11px 18px;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(8, 164, 75, 0.16);
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.refreshButton:hover {
+  background: #078d41;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(8, 164, 75, 0.22);
+}
+.refreshButton span {
+  font-size: 17px;
+} /* ========================================================= RECIPE SECTION ========================================================= */
+.recipeSection {
+  width: 100%;
+}
+.sectionHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+.sectionHeading h2 {
+  margin: 0;
+  color: #173b25;
+  font-size: 23px;
+  line-height: 1.25;
+  font-weight: 750;
+  letter-spacing: -0.3px;
+}
+.sectionHeading p {
+  margin: 6px 0 0;
+  color: #77837d;
+  font-size: 13px;
+  line-height: 1.5;
+} /* ========================================================= RECIPE COUNT ========================================================= */
+.recipeCount {
+  min-width: 48px;
+  height: 48px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e5ebe7;
+  color: #16861c;
+  font-size: 17px;
+  font-weight: 800;
+  box-shadow: 0 3px 10px rgba(25, 60, 39, 0.04);
+}
+.recipeCount span {
+  margin-top: -2px;
+  color: #89948e;
+  font-size: 9px;
+  font-weight: 600;
+} /* ========================================================= RECIPE GRID ========================================================= */
+.recipeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+} /* ========================================================= RECIPE CARD ========================================================= */
+.recipeCard {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e4ebe6;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(30, 64, 43, 0.055);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+.recipeCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(30, 64, 43, 0.11);
+} /* ========================================================= IMAGE ========================================================= */
+.imageContainer {
+  position: relative;
+  width: 100%;
+  height: 235px;
+  overflow: hidden;
+  background: #eee;
+}
+.recipeImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.recipeCard:hover .recipeImage {
+  transform: scale(1.04);
+} /* Dark gradient over image */
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.02) 35%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+  pointer-events: none;
+} /* ========================================================= IMAGE TAG ========================================================= */
+.availableTag,
+.additionalTag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 750;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+.availableTag {
+  background: rgba(228, 250, 237, 0.94);
+  color: #16861c;
+}
+.additionalTag {
+  background: rgba(255, 247, 221, 0.95);
+  color: #9b7300;
+}
+.tagDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+} /* ========================================================= IMAGE LABEL ========================================================= */
+.recipeImageLabel {
+  position: absolute;
+  bottom: 15px;
+  left: 17px;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+} /* ========================================================= CARD CONTENT ========================================================= */
+.recipeContent {
+  padding: 22px;
+} /* ========================================================= TITLE ========================================================= */
+.recipeTitleArea {
+  margin-bottom: 21px;
+}
+.recipeTitleArea h3 {
+  margin: 0;
+  color: #203b2a;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 750;
+  letter-spacing: -0.25px;
+} /* ========================================================= CONTENT SECTIONS ========================================================= */
+.contentSection {
+  margin-top: 20px;
+}
+.contentSection h4 {
+  margin: 0 0 10px;
+  color: #3d5547;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.65px;
+} /* ========================================================= INGREDIENTS ========================================================= */
+.ingredientList {
+  border-top: 1px solid #edf1ee;
+}
+.ingredientRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 9px 0;
+  border-bottom: 1px solid #edf1ee;
+  color: #66736b;
+  font-size: 13px;
+}
+.ingredientRow strong {
+  color: #30483a;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+} /* ========================================================= MISSING INGREDIENTS ========================================================= */
+.missingBox {
+  margin-top: 20px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #fffaf0;
+  border: 1px solid #f2e4bd;
+}
+.missingHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.missingIcon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f9e8ae;
+  color: #947000;
+  font-size: 17px;
+  font-weight: 700;
+}
+.missingHeader h4 {
+  margin: 0;
+  color: #806200;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.missingHeader p {
+  margin: 2px 0 0;
+  color: #a18a51;
+  font-size: 11px;
+}
+.missingList {
+  border-top: 1px solid #f1e6ca;
+}
+.missingRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1e6ca;
+  color: #756743;
+  font-size: 12px;
+}
+.missingRow strong {
+  color: #806200;
+  font-weight: 750;
+  white-space: nowrap;
+} /* ========================================================= PREPARATION STEPS ========================================================= */
+.stepsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: steps;
+}
+.stepsList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #657169;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.stepNumber {
+  flex: 0 0 23px;
+  width: 23px;
+  height: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: #edf6ef;
+  color: #16861c;
+  font-size: 11px;
+  font-weight: 800;
+} /* ========================================================= SAFETY ========================================================= */
+.safetyBox {
+  margin-top: 21px;
+  padding: 14px 15px;
+  border-radius: 11px;
+  background: #f7f9f8;
+  border: 1px solid #e8eeea;
+}
+.safetyTitle {
+  margin-bottom: 8px;
+  color: #3b5144;
+  font-size: 12px;
+  font-weight: 800;
+}
+.safetyBox ul {
+  margin: 0;
+  padding-left: 17px;
+}
+.safetyBox li {
+  margin-bottom: 5px;
+  color: #6b7770;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+.safetyBox li:last-child {
+  margin-bottom: 0;
+} /* ========================================================= EMPTY STATE ========================================================= */
+.emptyContainer {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  background: white;
+  border: 1px solid #e4ebe6;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(30, 64, 43, 0.04);
+}
+.emptyIllustration {
+  width: 84px;
+  height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fff2d6, #ffe7ba);
+  font-size: 39px;
+}
+.emptyContainer h2 {
+  margin: 0;
+  color: #273e30;
+  font-size: 22px;
+  font-weight: 750;
+}
+.emptyContainer p {
+  max-width: 500px;
+  margin: 10px 0 7px;
+  color: #6f7b74;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.emptyContainer span {
+  color: #98a19c;
+  font-size: 12px;
+} /* ========================================================= LOADING ========================================================= */
+.loadingContainer {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.loadingContainer h3 {
+  margin: 0 0 5px;
+  color: #30483a;
+  font-size: 17px;
+}
+.loadingContainer p {
+  margin: 0;
+  color: #7a867f;
+  font-size: 13px;
+}
+.spinner {
+  width: 38px;
+  height: 38px;
+  margin-bottom: 17px;
+  border: 3px solid #dcebe1;
+  border-top-color: #08a44b;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+} /* ========================================================= ERROR ========================================================= */
+.errorContainer {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 35px;
+  text-align: center;
+  background: white;
+  border: 1px solid #eadfdf;
+  border-radius: 16px;
+}
+.errorIcon {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: #fff0f0;
+  color: #d64545;
+  font-size: 25px;
+  font-weight: 800;
+}
+.errorContainer h2 {
+  margin: 0;
+  color: #493838;
+  font-size: 20px;
+}
+.errorContainer p {
+  max-width: 450px;
+  margin: 8px 0 18px;
+  color: #7b6d6d;
+  font-size: 13px;
+}
+.retryButton {
+  border: none;
+  background: #08a44b;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+} /* ========================================================= RESPONSIVE ========================================================= */
+@media (max-width: 1050px) {
+  .page {
+    padding: 28px 25px 50px;
+  }
+  .recipeGrid {
+    grid-template-columns: 1fr;
+  }
+  .imageContainer {
+    height: 250px;
+  }
+}
+@media (max-width: 700px) {
+  .page {
+    padding: 22px 18px 40px;
+  }
+  .pageHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 32px;
+  }
+  .pageHeader h1 {
+    font-size: 28px;
+  }
+  .pageHeader p {
+    font-size: 13px;
+  }
+  .refreshButton {
+    align-self: flex-start;
+  }
+  .sectionHeading {
+    align-items: flex-start;
+    gap: 15px;
+  }
+  .sectionHeading h2 {
+    font-size: 20px;
+  }
+  .recipeCount {
+    min-width: 42px;
+    height: 42px;
+  }
+  .imageContainer {
+    height: 220px;
+  }
+  .recipeContent {
+    padding: 18px;
+  }
+}
+@media (max-width: 450px) {
+  .pageHeader h1 {
+    font-size: 25px;
+  }
+  .sectionHeading {
+    flex-direction: column;
+  }
+  .recipeCount {
+    align-self: flex-start;
+  }
+  .imageContainer {
+    height: 200px;
+  }
+  .recipeTitleArea h3 {
+    font-size: 18px;
+  }
+}
