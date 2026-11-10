@@ -41,7 +41,7 @@ public class Notification {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "inventory_id")
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "inventory_id", nullable = true)
     private InventoryItem inventoryItem;
 }

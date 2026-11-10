@@ -1,7 +1,10 @@
 
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import styles from "../styling/RemedySuggestions.module.css";
 import foodPlaceholder from "../assets/img2.jpg";
+import axios from "../utils/apiClient";
+import { notifyAuthenticationChanged } from "../utils/auth";
 
 const RemedySuggestions = () => {
     const [recipes, setRecipes] = useState({
@@ -11,6 +14,7 @@ const RemedySuggestions = () => {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [sessionExpired, setSessionExpired] = useState(false);
 
     useEffect(() => {
         fetchRecipes();
@@ -21,53 +25,67 @@ const fetchRecipes = async () => {
     try {
         setLoading(true);
         setError("");
+        setSessionExpired(false);
 
         const token = localStorage.getItem("token");
 
         if (!token) {
+            setSessionExpired(true);
             throw new Error("Please log in to view your recipe suggestions.");
         }
 
-        const response = await fetch("/api/recipe/recommendations", {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-        });
-
-        if (response.status === 401 || response.status === 403) {
-            throw new Error("Your session has expired. Please log in again.");
-        }
-
-        if (!response.ok) {
-            const responseData = await response.json().catch(() => ({}));
-            throw new Error(
-                responseData.message || "Failed to fetch recipe recommendations."
-            );
-        }
-
-        const data = await response.json();
+        const response = await axios.get("/api/recipe/recommendations");
+        const data = response.data;
 
         if (data.error) {
             throw new Error(data.error);
         }
 
-        setRecipes({
-            canMakeNow: Array.isArray(data.canMakeNow)
-                ? data.canMakeNow
-                : [],
+        if (
+            !Array.isArray(data.canMakeNow) ||
+            !Array.isArray(data.needsAdditionalIngredients)
+        ) {
+            throw new Error(
+                "The recipe service returned an unexpected response. Please try again."
+            );
+        }
 
-            needsAdditionalIngredients: Array.isArray(
-                data.needsAdditionalIngredients
-            )
-                ? data.needsAdditionalIngredients
-                : [],
+        setRecipes({
+            canMakeNow: data.canMakeNow,
+            needsAdditionalIngredients: data.needsAdditionalIngredients,
         });
     } catch (error) {
         console.error("Recipe API error:", error);
 
+        const status = error.response?.status;
+        const responseData = error.response?.data || {};
+        const serverMessage =
+            responseData.detail ||
+            responseData.message ||
+            responseData.error;
+
+        if (status === 401) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            notifyAuthenticationChanged();
+            setSessionExpired(true);
+            setError(
+                serverMessage ||
+                "Your session has expired. Please log in again."
+            );
+            return;
+        }
+
+        if (status === 403) {
+            setError(
+                serverMessage ||
+                "The server denied access to recipe suggestions."
+            );
+            return;
+        }
+
         setError(
+            serverMessage ||
             error.message ||
             "Unable to load recipe suggestions. Please try again."
         );
@@ -161,12 +179,18 @@ const fetchRecipes = async () => {
 
                     <p>{error}</p>
 
-                    <button
-                        className={styles.retryButton}
-                        onClick={fetchRecipes}
-                    >
-                        Try Again
-                    </button>
+                    {sessionExpired ? (
+                        <Link className={styles.retryButton} to="/login">
+                            Log in again
+                        </Link>
+                    ) : (
+                        <button
+                            className={styles.retryButton}
+                            onClick={fetchRecipes}
+                        >
+                            Try Again
+                        </button>
+                    )}
                 </div>
             </div>
         );
@@ -306,6 +330,41 @@ const fetchRecipes = async () => {
 // =============================================================
 
 const RecipeCard = ({ recipe }) => {
+    const [imageUrl, setImageUrl] = useState("");
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        const fetchRecipeImage = async () => {
+            try {
+                const response = await fetch(
+                    `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(recipe.name)}`,
+                    { signal: controller.signal }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`Image provider returned ${response.status}`);
+                }
+
+                const data = await response.json();
+                const meal = findMatchingMeal(recipe.name, data.meals);
+
+                if (meal?.strMealThumb) {
+                    setImageUrl(meal.strMealThumb);
+                }
+            } catch (error) {
+                if (error.name !== "AbortError") {
+                    console.warn("Unable to load recipe image:", error);
+                }
+            }
+        };
+
+        setImageUrl("");
+        fetchRecipeImage();
+
+        return () => controller.abort();
+    }, [recipe.name]);
+
     return (
         <article className={styles.recipeCard}>
 
@@ -315,14 +374,11 @@ const RecipeCard = ({ recipe }) => {
 
             <div className={styles.imageContainer}>
                 <img
-                    src={foodPlaceholder}
+                    src={imageUrl || foodPlaceholder}
                     alt={recipe.name}
                     className={styles.recipeImage}
                     loading="lazy"
-                    onError={(event) => {
-                        event.currentTarget.onerror = null;
-                        event.currentTarget.src = foodPlaceholder;
-                    }}
+                    onError={() => setImageUrl("")}
                 />
 
                 {/* Dark image overlay */}
@@ -511,6 +567,39 @@ const RecipeCard = ({ recipe }) => {
             </div>
         </article>
     );
+};
+
+const findMatchingMeal = (recipeName, meals) => {
+    if (!Array.isArray(meals)) {
+        return null;
+    }
+
+    const ignoredWords = new Set(["and", "for", "the", "with"]);
+    const recipeWords = recipeName
+        .toLowerCase()
+        .match(/[a-z0-9]+/g)
+        ?.filter((word) => !ignoredWords.has(word)) ?? [];
+
+    if (recipeWords.length === 0) {
+        return null;
+    }
+
+    const matches = meals
+        .map((meal) => {
+            const mealWords = new Set(
+                (meal.strMeal?.toLowerCase().match(/[a-z0-9]+/g) ?? [])
+            );
+            const overlap = recipeWords.filter((word) => mealWords.has(word)).length;
+
+            return {
+                meal,
+                score: overlap / recipeWords.length,
+            };
+        })
+        .filter(({ meal, score }) => meal.strMealThumb && score >= 0.6)
+        .sort((first, second) => second.score - first.score);
+
+    return matches[0]?.meal ?? null;
 };
 
 export default RemedySuggestions;

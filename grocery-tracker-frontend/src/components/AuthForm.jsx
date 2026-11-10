@@ -15,9 +15,11 @@ footerText,
 footerLink,
 footerLinkText,
 }) {
-return ( <div className={styles.authContainer}> <form className={styles.authForm} onSubmit={onSubmit}> <h2>{title}</h2>
+return (
+    <div className={styles.authContainer}>
+        <form className={styles.authForm} onSubmit={onSubmit}>
+            <h2>{title}</h2>
 
-```
             {fields.map((field) => (
                 <input
                     key={field.name}

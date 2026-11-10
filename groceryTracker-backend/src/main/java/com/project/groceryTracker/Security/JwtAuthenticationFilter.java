@@ -2,7 +2,9 @@
 package com.project.groceryTracker.Security;
 
 import com.project.groceryTracker.Service.CustomUserDetailsService;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -30,10 +33,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getServletPath();
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
 
-        return path.equals("/api/auth/register")
-                || path.equals("/api/auth/login");
+        String path = request.getServletPath();
+        if (path == null || path.isBlank()) {
+            path = request.getRequestURI();
+        }
+
+        return "/api/auth/register".equals(path)
+                || "/api/auth/login".equals(path);
     }
     @Override
     protected void doFilterInternal(
@@ -78,16 +88,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .setAuthentication(authentication);
                 }
             }
+        } catch (ExpiredJwtException ex) {
+            writeUnauthorized(response, "Your sign-in token has expired. Please sign in again.");
+            return;
+        } catch (UsernameNotFoundException ex) {
+            writeUnauthorized(response, "The sign-in token does not match an active account. Please sign in again.");
+            return;
+        } catch (SignatureException ex) {
+            writeUnauthorized(
+                    response,
+                    "The sign-in token could not be verified. Make sure the backend uses the same JWT_SECRET for login and API requests."
+            );
+            return;
         } catch (JwtException | IllegalArgumentException ex) {
-            SecurityContextHolder.clearContext();
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write(
-                    "{\"message\":\"Invalid or expired token\"}"
+            writeUnauthorized(
+                    response,
+                    "The sign-in token is invalid. Please sign in again."
             );
             return;
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void writeUnauthorized(
+            HttpServletResponse response,
+            String message) throws IOException {
+            SecurityContextHolder.clearContext();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write(
+                    "{\"message\":\"" + message + "\"}"
+            );
     }
 }

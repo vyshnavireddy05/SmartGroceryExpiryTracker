@@ -189,6 +189,50 @@
     height: 19px;
 }
 
+.profileMenuContainer {
+    position: relative;
+}
+
+.profileDropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1000;
+    min-width: 150px;
+    padding-top: 8px;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+}
+
+.profileMenuContainer:hover .profileDropdown,
+.profileMenuContainer:focus-within .profileDropdown {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.logoutButton {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #e7ece9;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    color: #b42318;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.logoutButton:hover,
+.logoutButton:focus-visible {
+    background: #fff4f2;
+}
+
 
 /* ================= NOTIFICATION DOT ================= */
 

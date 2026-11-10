@@ -3,13 +3,13 @@ import leafLogo from '../assets/logo-leaf.png';
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from '../utils/apiClient';
+import { notifyAuthenticationChanged } from '../utils/auth';
 
 import {
     LuUser,
-    LuSearch,
     LuBell
-
 } from 'react-icons/lu';
+
 export default function Navbar() {
     const location = useLocation();
     const pathname = location.pathname;
@@ -21,6 +21,14 @@ export default function Navbar() {
     const navigate = useNavigate();
 
     const [notifications, setNotifications] = useState([]);
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        notifyAuthenticationChanged();
+        navigate("/login", { replace: true });
+    };
+
     useEffect(() => {
         let isActive = true;
         let refreshInterval;
@@ -156,14 +164,25 @@ export default function Navbar() {
                     </div>
 
 
-                    {/* Profile */}
-                    <button
-                        className={styles.profileButton}
-                        onClick={() => navigate('/dashboard/profile')}
-                        aria-label="Profile"
-                    >
-                        <LuUser />
-                    </button>
+                    <div className={styles.profileMenuContainer}>
+                        <button
+                            className={styles.profileButton}
+                            onClick={() => navigate('/dashboard/profile')}
+                            aria-label="Profile"
+                            aria-haspopup="true"
+                        >
+                            <LuUser />
+                        </button>
+
+                        <div className={styles.profileDropdown}>
+                            <button
+                                className={styles.logoutButton}
+                                onClick={handleLogout}
+                            >
+                                Log out
+                            </button>
+                        </div>
+                    </div>
 
                 </div>
             )}

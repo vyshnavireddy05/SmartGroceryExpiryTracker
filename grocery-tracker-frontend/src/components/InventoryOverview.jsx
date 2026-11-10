@@ -56,43 +56,63 @@ export default function InventoryOverview({ filter = "all" }) {
         }
     };
 
-    // Decrease quantity
+   
     const decreaseQuantity = async (id, currentQuantity) => {
+        if (currentQuantity <= 0 || updatingItemId === id) {
+            return;
+        }
+
         setRequestError("");
         setUpdatingItemId(id);
+
         try {
-            const newQuantity = Math.max(0, currentQuantity - 1);
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                setRequestError("Please log in to update your inventory.");
+                return;
+            }
+
+            if (currentQuantity <= 1) {
+                await axios.delete(`/api/inventory/deleteItem/${id}`);
+
+                setInventory((prevInventory) =>
+                    prevInventory.filter((item) => item.id !== id)
+                );
+                return;
+            }
 
             const response = await axios.put(
                 `/api/inventory/${id}/quantity`,
-                {
-                    quantity: newQuantity
-                }
+                { quantity: currentQuantity - 1 }
             );
 
-            if (newQuantity === 0) {
-                // Remove item from frontend state
+            const updatedQuantity = response.data?.quantity;
+
+            if (updatedQuantity == null || updatedQuantity <= 0) {
                 setInventory((prevInventory) =>
-                    prevInventory.filter(item => item.id !== id)
+                    prevInventory.filter((item) => item.id !== id)
                 );
-            } else {
-                // Update quantity normally
-                setInventory((prevInventory) =>
-                    prevInventory.map(item =>
-                        item.id === id
-                            ? {
-                                ...item,
-                                quantity: response.data.quantity
-                            }
-                            : item
-                    )
-                );
+                return;
             }
 
+            setInventory((prevInventory) =>
+                prevInventory.map((item) =>
+                    item.id === id
+                        ? {
+                            ...item,
+                            quantity: updatedQuantity
+                        }
+                        : item
+                )
+            );
         } catch (error) {
             console.error("Error decreasing quantity:", error);
+
             setRequestError(
-                error.response?.data?.message || "Unable to update quantity."
+                error.response?.data?.message ||
+                error.response?.data?.detail ||
+                "Unable to update quantity. Please try again."
             );
         } finally {
             setUpdatingItemId(null);
@@ -295,7 +315,7 @@ export default function InventoryOverview({ filter = "all" }) {
                                                     )
                                                 }
                                                 disabled={
-                                                    item.quantity === 0 ||
+                                                    item.quantity <= 0 ||
                                                     updatingItemId === item.id
                                                 }
                                             >

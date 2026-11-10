@@ -5,6 +5,7 @@ import com.project.groceryTracker.DTO.InventoryDTO;
 import com.project.groceryTracker.Entity.InventoryItem;
 import com.project.groceryTracker.Entity.User;
 import com.project.groceryTracker.Repository.InventoryRepo;
+import com.project.groceryTracker.Repository.NotificationRepo;
 import com.project.groceryTracker.Repository.UserRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,14 +19,17 @@ public class InventoryService {
 
     private final InventoryRepo inventoryRepo;
     private final UserRepo userRepo;
+    private final NotificationRepo notificationRepo;
     private final RecipeService recipeService;
 
     public InventoryService(
             InventoryRepo inventoryRepo,
             UserRepo userRepo,
+            NotificationRepo notificationRepo,
             RecipeService recipeService) {
         this.inventoryRepo = inventoryRepo;
         this.userRepo = userRepo;
+        this.notificationRepo = notificationRepo;
         this.recipeService = recipeService;
     }
 
@@ -140,7 +144,7 @@ public class InventoryService {
             return false;
         }
 
-        inventoryRepo.delete(item);
+        deleteOwnedItem(item);
         return true;
     }
 
@@ -161,12 +165,18 @@ public class InventoryService {
         }
 
         if (quantity == null || quantity <= 0) {
-            inventoryRepo.delete(item);
+            deleteOwnedItem(item);
             return null;
         }
 
         item.setQuantity(quantity);
 
         return inventoryRepo.save(item);
+    }
+
+    private void deleteOwnedItem(InventoryItem item) {
+        // Keep notification history: clear the FK, then delete the inventory row.
+        notificationRepo.clearInventoryItemReference(item.getId());
+        inventoryRepo.delete(item);
     }
 }

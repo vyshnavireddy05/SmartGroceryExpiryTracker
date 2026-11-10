@@ -38,6 +38,10 @@ public class RecipeController {
     public ResponseEntity<JsonNode> getRecipeRecommendations(
             @AuthenticationPrincipal UserDetails userDetails) {
 
+        if (userDetails == null) {
+            return ResponseEntity.status(401).build();
+        }
+
         return ResponseEntity.ok(
                 aiRecipeService.getRecipeRecommendations(
                         userDetails.getUsername()));
